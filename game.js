@@ -22,7 +22,7 @@ class Vector {
 /* size = typeof Vector,  location = typeof Vector, speed = typeof Vector*/
 class Actor {
     constructor(location = new Vector(), size = new Vector(), speed = new Vector()) {
-      if(typeof location != new Vector() || typeof size != new Vector() || typeof speed != new Vector()){
+      if(!(location.instanceOf(Vector)) || (size.instanceOf(Vector)) || speed.instanceOf(Vector)){
         throw new Error('Неверный тип данных, задайте аргументам тип Vector');
       }
       this.pos = location;
@@ -60,7 +60,7 @@ class Actor {
 
 class Level {
   constructor(grid, actors) {
-    this.grid = (grid === undefined) ? [] : grid;
+    this.grid = grid.slice();
     this.actors = actors;
 
       Object.defineProperty(this, "player", {get: function () {
@@ -75,20 +75,13 @@ class Level {
       this.height = this.grid.length;
 
       //Ширина поля
-      Object.defineProperty(this, "width", {
-        get: () => {
-          if (this.grid.length === 0) {
-            return 0;
-          }
-          let maxCell = 0;
-          for (let i = 0; i < grid.length; i++) {
-            if (this.grid[i].length > maxCell) {
-               maxCell = this.grid[i].length;
-            }
-            return maxCell;
-          }
+      this.width = this.grid.reduce(function(sum, current) {
+        if (sum > current.length) {
+          return sum;
+        } else {
+          return current.length;
         }
-  });
+      }, 0);
     
 
      ///состояние прохождения уровня, равное null после создания.
