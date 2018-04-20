@@ -6,8 +6,8 @@ class Vector {
         this.y = y;
     }
 
-    plus(Vector){
-        if(typeof Vector){
+    plus(vector){
+        if(vector.instanceOf(Vector)){
             return new Vector(this.x + Vector.x, this.y + Vector.y);
         }
         throw new Error('Можно прибавлять к вектору только вектор типа Vector');    
@@ -46,12 +46,12 @@ class Actor {
     act(){
     }
 
-    isInterest(Actor){
-      if(Actor != new Actor() || Actor == undefined){
+    isInterest(actor){
+      if(actor != new Actor() || actor == undefined){
         throw new Error('Аргумент должен соответсвовать типу Actor');
       }
       //Если передать тот же объект то вернуть false, Объект не пересекается сам с собой
-      if(this === Actor){
+      if(this === actor){
         return false;
       }  
     }
@@ -60,7 +60,11 @@ class Actor {
 
 class Level {
   constructor(grid, actors) {
-    this.grid = grid.slice();
+    if(grid != undefined) {
+      this.grid = grid.slice();
+    } else {
+      this.grid = [];
+    }
     this.actors = actors;
 
       Object.defineProperty(this, "player", {get: function () {
@@ -95,19 +99,19 @@ class Level {
     ((status != null) || (finishDelay < 0)) ? true : false;
   }
 
-  actorAt(Actor) {
+  actorAt(actor) {
     for(let actorObj of actors) {
-      if(Actor.isIntersect(actorObj)) {
+      if(actor.isIntersect(actorObj)) {
         return actorObj;
       }
-      if(Actor == undefined || (!(Actor.instanceOf(Actor)))) {
+      if(actor == undefined || (!(actor.instanceOf(Actor)))) {
         throw new Error("Передан неверный аргумент");
       }
-      if(!(Actor.isIntersect(actorObj))){
+      if(!(actor.isIntersect(actorObj))){
         return undefined;
       }
-      if(Actor.isIntersect(actorObj.length > 1)){
-        return Actor;
+      if(actor.isIntersect(actorObj.length > 1)){
+        return actor;
       }
     }
   }
@@ -127,8 +131,8 @@ class Level {
     return undefined;
   }
 
-  removeActor(Actor){
-    this.actors = Actor;
+  removeActor(actor){
+    this.actors = actor;
     this.actors.splice(index, 1);
     return this.actors;
   }
