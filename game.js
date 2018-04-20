@@ -28,20 +28,28 @@ class Actor {
       this.pos = location;
       this.size = size;
       this.speed = speed;
-      this.type = actor;
 
-      Object.defineProperty(this, ['left', 'top', 'right', 'bottom'], {
-        enumerable: true,
-        configurable: false,
-        writable: false,
-      });
-      Object.defineProperty(this, 'type', {
-        enumerable: true,
-        configurable: false,
-        writable: false,
-        value: actor,
-      });
     }
+
+    get type() {
+      return 'actor';
+    }
+  
+    get left() {//границы объекта по X
+      return this.pos.x;
+    }
+  
+    get right() {//границы объекта по X + размер
+      return this.pos.x + this.size.x;
+    }
+  
+    get top() { //границы объекта по Y
+      return this.pos.y;
+    }
+  
+    get bottom() { //границы объекта по Y + размер
+      return this.pos.y + this.size.y
+  }
 
     act(){
     }
@@ -67,13 +75,7 @@ class Level {
     }
     this.actors = actors;
 
-      Object.defineProperty(this, "player", {get: function () {
-      let player = undefined;
-      if (this.actors !== undefined)
-        for (let actor of this.actors)
-          if (actor.type === "player" || actor.__proto__.type === "player") player = actor;
-      return player;
-      }});
+    this.player = this.actors.find(actor => actor.type === 'player');
 
       //Высота поля
       this.height = this.grid.length;
@@ -100,7 +102,7 @@ class Level {
   }
 
   actorAt(actor) {
-    for(let actorObj of actors) {
+    for(let actorObj of Actor) {
       if(actor.isIntersect(actorObj)) {
         return actorObj;
       }
@@ -132,7 +134,7 @@ class Level {
   }
 
   removeActor(actor){
-    this.actors = actor;
+    var index = this.actors.indexOf(actor); //возвращает индекс объекта
     this.actors.splice(index, 1);
     return this.actors;
   }
@@ -187,20 +189,20 @@ class LevelParser {
     }
   }
  // Игровое поле
-  createGrid(strings) {
-    this.grid = [], row;
-    if(strings.length < 1) {
-      return [];
-    }
-    for(let string of strings) {
-      //string = "lava" || ;
-    }
-    //Нужна подсказка.......................
-  }
+  createGrid(strings = []) {
+  return strings.map(row => row.split('').map(symbol => this.obstacleFromSymbol(symbol)));
+}
+
   
-  createActors(strings) {
-    //Нужна подсказка.............................
-  }
+  createActors(strings = []) {
+    var actor, actors = [], moovingObj, func;
+    for (let y = 0; y < strings.length; y++) {
+      for (let x = 0; x < strings[y].length; x++) {
+        moovingObj = strings[y][x];
+      }
+    }
+    return actors;
+}
 
   parse(strings) {
     var grid = this.createGrid(strings);
@@ -211,7 +213,96 @@ class LevelParser {
 }
 
 class Fireball extends Actor {
-  constructor(coordinates = new Vector({0:0}), speed = new Vector({0:0})) {
+  constructor(pos = new Vector({0:0}), speed = new Vector({0:0})) {
+    super(pos, new Vector(1, 1), speed);
+  }
 
+  get type() {
+    return 'fireball';
+  }
+
+  getNextPosition(time = 1) {
+    var newPosition = this.pos + this.speed.times(time);
+    return newPosition;
+  }
+
+  handleObstacle() {
+    this.speed = this.speed.times(-1);
+    return this.speed;
+  }
+
+  act(time, level) {
+    const nextPosition = this.getNextPosition(time);
+    if (level.obstacleAt(nextPosition, this.size)) {
+      this.handleObstacle();
+    } else {
+      this.pos = nextPosition;
+    }
   }
 }
+
+class HorizontalFireball extends Fireball {
+  constructor(pos = new Vector(0, 0)) {
+    super(pos, new Vector(2, 0));
+  }
+}
+
+class VerticalFireball extends Fireball {
+  constructor(pos = new Vector(0, 0)) {
+    super(pos, new Vector(0, 2));
+  }
+}
+
+class FireRain extends Fireball {
+  constructor(pos = new Vector(0, 0)) {
+    super(pos, new Vector(0, 3));
+    this.startPos = this.pos;
+  }
+
+  handleObstacle() {
+    this.pos = this.startPos;
+  }
+}
+
+class Coin extends Actor {
+  constructor(pos = new Vector(0, 0)) {
+    super(pos.plus(new Vector(0.2, 0.1)), new Vector(0.6, 0.6));
+    this.springSpeed = 8;
+    this.springDist = 0.07;
+    this.spring = Math.random() * (Math.PI * 2);
+    this.startPos = this.pos;
+    
+  }
+
+  get type() {
+    return 'coin';
+  }
+
+  updateSpring(time = 1) {
+    this.spring += this.springSpeed * time;
+  }
+
+  getSpringVector() {
+    return new Vector(0, Math.sin(this.spring) * this.springDist)
+  }
+
+  getNextPosition(time = 1) {
+    this.updateSpring(time);
+    return this.startPos.plus(this.getSpringVector());
+  }
+
+  act(time) {
+    this.pos = this.getNextPosition(time);
+  }
+}
+
+class Player extends Actor {
+  constructor(pos = new Vector(0, 0)) {
+    super(pos.plus(new Vector(0, -0.5)), new Vector(0.8, 1.5), this.speed = new Vector(0, 0));
+  }
+
+  get type() {
+    return 'player';
+  }
+}
+
