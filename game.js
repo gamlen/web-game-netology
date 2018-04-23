@@ -22,7 +22,7 @@ class Vector {
 /* size = typeof Vector,  location = typeof Vector, speed = typeof Vector*/
 class Actor {
     constructor(location = new Vector(0, 0), size = new Vector(1, 1), speed = new Vector(0, 0)) {
-      if(!(location instanceof Vector) || (size instanceof Vector) || speed instanceof Vector){
+      if(!(location instanceof Vector) || !(size instanceof Vector) || !(speed instanceof Vector)){
         throw new Error('Неверный тип данных, задайте аргументам тип Vector');
       }
       this.pos = location;
@@ -62,7 +62,9 @@ class Actor {
       if(this === actor){
         return false;
       }  
-      return (this.right > actor.left) && (this.left < actor.right) && (this.top < actor.top) && (this.bottom > actor.bottom);
+      if ((this.right > actor.left) && (this.left < actor.right) && (this.top < actor.bottom) && (this.bottom > actor.top)){
+        return;
+      }
     }
 
 }
@@ -202,7 +204,7 @@ class LevelParser {
   }
  // Игровое поле
   createGrid(strings = []) {
-  return strings.map(row => row.split('')).map(symbol => this.obstacleFromSymbol(symbol)));
+    return strings.map(row => row.split('')).map(row => row.map(row => this.obstacleFromSymbol(row))); 
 }
 
   
@@ -225,7 +227,7 @@ class LevelParser {
 }
 
 class Fireball extends Actor {
-  constructor(pos = new Vector({0:0}), speed = new Vector({0:0})) {
+  constructor(pos = new Vector(0, 0), speed = new Vector(0, 0)) {
     super(pos, new Vector(1, 1), speed);
   }
 
