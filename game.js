@@ -148,16 +148,7 @@ class Level {
   }
 
   noMoreActors(type){
-    for(let actorOn of this.actors) {
-      
-      if(actorOn.type === type) {
-        return false;
-      }
-      if(actorOn.type !== type) {
-        return true;
-      }
-      return true;
-    }
+    return !this.actors.some((actor) => actor.type === type)
   }
 
   playerTouched(type, actor) {
@@ -276,7 +267,7 @@ class FireRain extends Fireball {
   }
 
   handleObstacle() {
-    this.position  = this.startPos;
+    this.pos = new Vector(this.startPos.x, this.startPos.y);
   }
 }
 
@@ -307,14 +298,14 @@ class Coin extends Actor {
     return this.startPos.plus(this.getSpringVector());
   }
 
-  act(time) {
-    this.position  = this.getNextPosition(time);
+  act(time, level) {
+    this.pos = this.getNextPosition(time);
   }
 }
 
 class Player extends Actor {
-  constructor(position  = new Vector(0, 0)) {
-    super(position.plus(new Vector(0, -0.5)), new Vector(0.8, 1.5), this.speed = new Vector(0, 0));
+  constructor(position = new Vector(0, 0)) {
+    super(position.plus(new Vector(0, -0.5)), new Vector(0.8, 1.5));
   }
 
   get type() {
@@ -322,3 +313,11 @@ class Player extends Actor {
   }
 }
 
+const actorDict = {
+  '@': Player,
+  'v': FireRain,
+  'o': Coin,
+  '=': HorizontalFireball,
+  '|': VerticalFireball
+
+};
