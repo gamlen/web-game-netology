@@ -119,7 +119,7 @@ class Level {
 
     var leftWall   = Math.floor(position.x);
     var rightWALL = Math.ceil(position.x + size.x);
-    var topWall = Math.faloor(position.y);
+    var topWall = Math.floor(position.y);
     var bottomWall = Math.ceil(position.y + size.y);
     
     let actor = new Actor(position, size);
@@ -156,6 +156,7 @@ class Level {
       if(actorOn.type !== type) {
         return true;
       }
+      return true;
     }
   }
 
