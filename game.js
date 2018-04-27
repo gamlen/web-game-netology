@@ -315,6 +315,7 @@ class Player extends Actor {
 
 let levels = [
   [
+  '         ',  
   '        o',
   '       xx',
   '      xxx',
@@ -325,6 +326,7 @@ let levels = [
   '         '
   ],
   [
+  ' ',
   ' @         ',
   ' o         ',
   'xx        o',
@@ -333,6 +335,18 @@ let levels = [
   '           ',
   '!!!!!!!!!!!',
   '           '
+  ],
+  [
+  '', 
+  '                                        ',
+  ' @               v      v     v         ',
+  ' o                                      ',
+  'xx           o      o      o           o',
+  '     o       x      x      x      xx   x',
+  '    xxx                                 ',
+  '                                        ',
+  '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',
+  '                                         '
   ]
 ];
 const actorDict = {
