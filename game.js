@@ -117,10 +117,10 @@ class Level {
       throw new Error("Неверный тип аргументов");
     }
 
-    var leftWall   = Math.floor(position.x);
-    var rightWALL = Math.ceil(position.x + size.x);
-    var topWall = Math.floor(position.y);
-    var bottomWall = Math.ceil(position.y + size.y);
+    const leftWall   = Math.floor(position.x);
+    const rightWALL = Math.ceil(position.x + size.x);
+    const topWall = Math.floor(position.y);
+    const bottomWall = Math.ceil(position.y + size.y);
     
     let actor = new Actor(position, size);
     let level = new Actor(new Vector(), new Vector(this.width, this.height));
@@ -141,7 +141,7 @@ class Level {
   }
 
   removeActor(actor){
-    var index = this.actors.indexOf(actor); //возвращает индекс объекта
+    const index = this.actors.indexOf(actor); //возвращает индекс объекта
     if(index !== -1) {
     this.actors.splice(index, 1);
     }
@@ -198,7 +198,7 @@ class LevelParser {
 
   
   createActors(strings = []) {
-    var actor, actors = [], moovingObj, func;
+    let actor, actors = [], moovingObj, func;
     for (let y = 0; y < strings.length; y++) {
       for (let x = 0; x < strings[y].length; x++) {
         moovingObj = strings[y][x];
@@ -213,8 +213,8 @@ class LevelParser {
 }
 
   parse(strings) {
-    var grid = this.createGrid(strings);
-    var actors = this.createActors(strings);
+    let grid = this.createGrid(strings);
+    let actors = this.createActors(strings);
     return new Level(grid, actors);
   }
 
@@ -230,7 +230,7 @@ class Fireball extends Actor {
   }
 
   getNextPosition(time = 1) {
-    var newPosition = new Vector(this.pos.x + this.speed.x * time, this.pos.y + this.speed.y * time);
+    const newPosition = new Vector(this.pos.x + this.speed.x * time, this.pos.y + this.speed.y * time);
     return newPosition;
   }
 
@@ -239,7 +239,7 @@ class Fireball extends Actor {
   }
 
   act(time, level) {
-    var nextPosition = this.getNextPosition(time);
+    const nextPosition = this.getNextPosition(time);
     if (level.obstacleAt(nextPosition, this.size)) {
       this.handleObstacle();
     } else {
@@ -313,6 +313,28 @@ class Player extends Actor {
   }
 }
 
+let levels = [
+  [
+  '        o',
+  '       xx',
+  '      xxx',
+  '    o    ',
+  '   xxx   ',
+  ' @       ',
+  'xxx!!!!xx',
+  '         '
+  ],
+  [
+  ' @         ',
+  ' o         ',
+  'xx        o',
+  '     o   xx',
+  '    xxx    ',
+  '           ',
+  '!!!!!!!!!!!',
+  '           '
+  ]
+];
 const actorDict = {
   '@': Player,
   'v': FireRain,
@@ -321,3 +343,6 @@ const actorDict = {
   '|': VerticalFireball
 
 };
+const parser = new LevelParser(actorDict);
+runGame(levels, parser, DOMDisplay)
+.then(() => alert('RESPECT+'));
