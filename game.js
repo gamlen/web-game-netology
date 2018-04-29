@@ -79,13 +79,7 @@ class Level {
       this.height = this.grid.length;
 
       //Ширина поля
-      this.width = this.grid.reduce((sum, current) => {
-        if (sum > current.length) {
-          return sum;
-        } else {
-          return current.length;
-        }
-      }, 0);
+      this.width = Math.max(0, ...this.grid.map(item => item.length));
     
 
      ///состояние прохождения уровня, равное null после создания.
@@ -202,13 +196,15 @@ class LevelParser {
     for (let y = 0; y < strings.length; y++) {
       for (let x = 0; x < strings[y].length; x++) {
         moovingObj = strings[y][x];
-        try {
-          func = this.actorFromSymbol(moovingObj);
+        func = this.actorFromSymbol(moovingObj);
+        if (typeof func === 'function') {
           actor = new func(new Vector(x, y));
-          if (actor instanceof Actor) actors.push(actor);
-        } catch (exception) {}
+          if (actor instanceof Actor) {
+            actors.push(actor);
+          }
+        }
       }
-    }
+    } 
     return actors;
 }
 
